@@ -18,14 +18,13 @@ public class RasPiClient {
     private GpioPinDigitalInput myButton;
     private GpioPinDigitalOutput myLed;
 
-    private Object lock = new Object();
+    private final Object lock = new Object();
 
     public static void main(String[] args) {
         LOGGER.info("Starting...");
         RasPiClient rasPiClient = new RasPiClient();
 
         rasPiClient.initialize();
-        //rasPiClient.work();
         rasPiClient.doWait();
         rasPiClient.shutdown();
     }
@@ -35,7 +34,7 @@ public class RasPiClient {
         while (!done) {
             synchronized (lock) {
                 try {
-                    this.wait();
+                    lock.wait();
                     LOGGER.debug("I'm done waiting");
                 } catch (InterruptedException e) {
                     LOGGER.debug("Who woke me up?");
@@ -43,19 +42,6 @@ public class RasPiClient {
             }
         }
     }
-
-    private void work() {
-        try {
-            while (true) {
-                Thread.sleep(500);
-                myLed.toggle();
-                LOGGER.debug("Toggling..." + myLed.getState());
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     private void initialize() {
         LOGGER.debug("Starting init...");
