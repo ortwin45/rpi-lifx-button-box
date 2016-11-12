@@ -77,6 +77,7 @@ public class RasPiClient {
         myButton.setShutdownOptions(true);
         myLed.setShutdownOptions(true, PinState.LOW);
 
+        myButton.setDebounce(50);
         myButton.addListener(new GpioButtonListener(myLed, lock, lifxClient));
         LOGGER.debug("Init done...");
     }
