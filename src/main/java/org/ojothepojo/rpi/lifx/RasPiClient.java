@@ -38,8 +38,12 @@ public class RasPiClient {
     private void startLifxClient() {
         try {
             lifxClient = new LifxClient();
+            lifxClient.startListenerThread();
+            Thread.sleep(500);
             lifxClient.sendMessage(new GetService());
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
