@@ -23,8 +23,22 @@ public class RasPiClient {
         RasPiClient rasPiClient = new RasPiClient();
 
         rasPiClient.initialize();
-        rasPiClient.work();
+        //rasPiClient.work();
+        rasPiClient.doWait();
+
         rasPiClient.shutdown();
+    }
+
+    private synchronized void doWait() {
+        boolean done = false;
+        while (!done) {
+            try {
+                myLed.wait();
+                LOGGER.debug("I'm done waiting");
+            } catch (InterruptedException e) {
+                LOGGER.debug("Who is interrupting me?");
+            }
+        }
     }
 
     private void work() {
@@ -55,11 +69,12 @@ public class RasPiClient {
         myButton.setShutdownOptions(true);
         myLed.setShutdownOptions(true, PinState.LOW);
 
-        myButton.addListener(new GpioButtonListener());
+        myButton.addListener(new GpioButtonListener(myLed));
         LOGGER.debug("Init done...");
     }
 
     private void shutdown() {
+        LOGGER.info("Shutting down...");
         gpio.shutdown();
     }
 }
