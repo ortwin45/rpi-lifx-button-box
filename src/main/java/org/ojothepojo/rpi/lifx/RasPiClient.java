@@ -8,13 +8,18 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RasPiClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RasPiClient.class);
+
     private final GpioController gpio = GpioFactory.getInstance();
-    GpioPinDigitalInput myButton;
-    GpioPinDigitalOutput myLed;
+    private GpioPinDigitalInput myButton;
+    private GpioPinDigitalOutput myLed;
 
     public static void main(String[] args) {
+        LOGGER.info("Starting...");
         RasPiClient rasPiClient = new RasPiClient();
 
         rasPiClient.initialize();
@@ -26,6 +31,7 @@ public class RasPiClient {
         try {
             while (true) {
                 Thread.sleep(500);
+                LOGGER.debug("Toggling...");
                 myLed.toggle();
             }
         } catch (InterruptedException e) {
@@ -35,6 +41,7 @@ public class RasPiClient {
 
 
     private void initialize() {
+        LOGGER.debug("Starting init...");
         myButton = gpio.provisionDigitalInputPin(
                 RaspiPin.GPIO_02,             // PIN NUMBER
                 "MyButton",                   // PIN FRIENDLY NAME (optional)
@@ -49,6 +56,7 @@ public class RasPiClient {
         myLed.setShutdownOptions(true, PinState.LOW);
 
         myButton.addListener(new GpioButtonListener());
+        LOGGER.debug("Init done...");
     }
 
     private void shutdown() {
