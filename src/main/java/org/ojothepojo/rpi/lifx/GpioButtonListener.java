@@ -10,9 +10,11 @@ public class GpioButtonListener implements GpioPinListenerDigital {
     private static final Logger LOGGER = LoggerFactory.getLogger(GpioButtonListener.class);
 
     private GpioPinDigitalOutput led;
+    private Object lock;
 
-    public GpioButtonListener(GpioPinDigitalOutput led) {
+    public GpioButtonListener(GpioPinDigitalOutput led, Object lock) {
         this.led = led;
+        this.lock = lock;
     }
 
     @Override
@@ -20,10 +22,8 @@ public class GpioButtonListener implements GpioPinListenerDigital {
         // display pin state on console
         LOGGER.debug(" --> GPIO PIN STATE CHANGE: " + event.getPin() + " = " + event.getState());
         led.toggle();
-        wakeup();
-    }
-
-    synchronized void wakeup() {
-        led.notify();
+        synchronized (lock) {
+            lock.notify();
+        }
     }
 }

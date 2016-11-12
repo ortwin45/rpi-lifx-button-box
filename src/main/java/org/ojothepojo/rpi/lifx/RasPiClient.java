@@ -18,6 +18,8 @@ public class RasPiClient {
     private GpioPinDigitalInput myButton;
     private GpioPinDigitalOutput myLed;
 
+    private Object lock = new Object();
+
     public static void main(String[] args) {
         LOGGER.info("Starting...");
         RasPiClient rasPiClient = new RasPiClient();
@@ -31,7 +33,7 @@ public class RasPiClient {
     private void doWait() {
         boolean done = false;
         while (!done) {
-            synchronized (this) {
+            synchronized (lock) {
                 try {
                     this.wait();
                     LOGGER.debug("I'm done waiting");
@@ -70,7 +72,7 @@ public class RasPiClient {
         myButton.setShutdownOptions(true);
         myLed.setShutdownOptions(true, PinState.LOW);
 
-        myButton.addListener(new GpioButtonListener(myLed));
+        myButton.addListener(new GpioButtonListener(myLed, lock));
         LOGGER.debug("Init done...");
     }
 
