@@ -25,18 +25,19 @@ public class RasPiClient {
         rasPiClient.initialize();
         //rasPiClient.work();
         rasPiClient.doWait();
-
         rasPiClient.shutdown();
     }
 
-    private synchronized void doWait() {
+    private void doWait() {
         boolean done = false;
         while (!done) {
-            try {
-                myLed.wait();
-                LOGGER.debug("I'm done waiting");
-            } catch (InterruptedException e) {
-                LOGGER.debug("Who is interrupting me?");
+            synchronized (this) {
+                try {
+                    this.wait();
+                    LOGGER.debug("I'm done waiting");
+                } catch (InterruptedException e) {
+                    LOGGER.debug("Who woke me up?");
+                }
             }
         }
     }
