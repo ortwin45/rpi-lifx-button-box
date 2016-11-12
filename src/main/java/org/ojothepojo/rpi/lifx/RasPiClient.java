@@ -32,7 +32,7 @@ public class RasPiClient {
             while (true) {
                 Thread.sleep(500);
                 myLed.toggle();
-                LOGGER.debug("Toggling..." + myButton.getState());
+                LOGGER.debug("Toggling..." + myLed.getState());
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
