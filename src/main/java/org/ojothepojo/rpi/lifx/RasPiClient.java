@@ -31,8 +31,8 @@ public class RasPiClient {
         try {
             while (true) {
                 Thread.sleep(500);
-                LOGGER.debug("Toggling...");
                 myLed.toggle();
+                LOGGER.debug("Toggling..." + myButton.getState());
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
