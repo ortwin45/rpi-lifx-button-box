@@ -29,8 +29,8 @@ public class RasPiClient {
         LOGGER.info("Starting...");
         RasPiClient rasPiClient = new RasPiClient();
 
-        rasPiClient.initialize();
         rasPiClient.startLifxClient();
+        rasPiClient.initialize();
         rasPiClient.doWait();
         rasPiClient.shutdown();
     }
