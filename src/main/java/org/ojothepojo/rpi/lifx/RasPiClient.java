@@ -8,13 +8,18 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
+import org.ojothepojo.lifx.LifxClient;
+import org.ojothepojo.lifx.message.device.request.GetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class RasPiClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(RasPiClient.class);
 
     private final GpioController gpio = GpioFactory.getInstance();
+    private LifxClient lifxClient;
     private GpioPinDigitalInput myButton;
     private GpioPinDigitalOutput myLed;
 
@@ -25,8 +30,18 @@ public class RasPiClient {
         RasPiClient rasPiClient = new RasPiClient();
 
         rasPiClient.initialize();
+        rasPiClient.startLifxClient();
         rasPiClient.doWait();
         rasPiClient.shutdown();
+    }
+
+    private void startLifxClient() {
+        try {
+            lifxClient = new LifxClient();
+            lifxClient.sendMessage(new GetService());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void doWait() {
