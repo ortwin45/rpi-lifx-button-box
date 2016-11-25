@@ -37,7 +37,6 @@ public class RasPiClient {
         try {
             lifxClient = new LifxClient();
             lifxClient.startListenerThread();
-            Thread.sleep(500);
             lifxClient.sendMessage(new GetService());
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,20 +63,20 @@ public class RasPiClient {
         LOGGER.debug("Starting init...");
         redButton = gpio.provisionDigitalInputPin(
                 RaspiPin.GPIO_02,             // PIN NUMBER
-                "RedButton",                   // PIN FRIENDLY NAME (optional)
+                "RedButton",           // PIN FRIENDLY NAME (optional)
                 PinPullResistance.PULL_DOWN); // PIN RESISTANCE (optional)
         yellowButton = gpio.provisionDigitalInputPin(
                 RaspiPin.GPIO_03,             // PIN NUMBER
-                "YellowButton",                   // PIN FRIENDLY NAME (optional)
+                "YellowButton",        // PIN FRIENDLY NAME (optional)
                 PinPullResistance.PULL_DOWN); // PIN RESISTANCE (optional)
 
         redButton.setShutdownOptions(true);
         redButton.setDebounce(100);
-        redButton.addListener(new GpioButtonListener(lock, lifxClient));
+        redButton.addListener(new RedButtonListener(lock, lifxClient));
 
         yellowButton.setShutdownOptions(true);
         yellowButton.setDebounce(100);
-        yellowButton.addListener(new GpioButtonListener(lock, lifxClient));
+        yellowButton.addListener(new YellowButtonListener(lock, lifxClient));
 
         LOGGER.debug("Init done...");
     }
