@@ -4,9 +4,7 @@ package org.ojothepojo.rpi.lifx;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinPullResistance;
-import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import org.ojothepojo.lifx.LifxClient;
 import org.ojothepojo.lifx.message.device.request.GetService;
@@ -20,8 +18,8 @@ public class RasPiClient {
 
     private final GpioController gpio = GpioFactory.getInstance();
     private LifxClient lifxClient;
-    private GpioPinDigitalInput myButton;
-    private GpioPinDigitalOutput myLed;
+    private GpioPinDigitalInput redButton;
+    private GpioPinDigitalInput yellowButton;
 
     private final Object lock = new Object();
 
@@ -64,21 +62,23 @@ public class RasPiClient {
 
     private void initialize() {
         LOGGER.debug("Starting init...");
-        myButton = gpio.provisionDigitalInputPin(
+        redButton = gpio.provisionDigitalInputPin(
                 RaspiPin.GPIO_02,             // PIN NUMBER
-                "MyButton",                   // PIN FRIENDLY NAME (optional)
+                "RedButton",                   // PIN FRIENDLY NAME (optional)
+                PinPullResistance.PULL_DOWN); // PIN RESISTANCE (optional)
+        yellowButton = gpio.provisionDigitalInputPin(
+                RaspiPin.GPIO_03,             // PIN NUMBER
+                "YellowButton",                   // PIN FRIENDLY NAME (optional)
                 PinPullResistance.PULL_DOWN); // PIN RESISTANCE (optional)
 
-        myLed = gpio.provisionDigitalOutputPin(
-                RaspiPin.GPIO_04,   // PIN NUMBER
-                "MyLED",           // PIN FRIENDLY NAME (optional)
-                PinState.LOW);      // PIN STARTUP STATE (optional)
+        redButton.setShutdownOptions(true);
+        redButton.setDebounce(100);
+        redButton.addListener(new GpioButtonListener(lock, lifxClient));
 
-        myButton.setShutdownOptions(true);
-        myLed.setShutdownOptions(true, PinState.LOW);
+        yellowButton.setShutdownOptions(true);
+        yellowButton.setDebounce(100);
+        yellowButton.addListener(new GpioButtonListener(lock, lifxClient));
 
-        myButton.setDebounce(100);
-        myButton.addListener(new GpioButtonListener(myLed, lock, lifxClient));
         LOGGER.debug("Init done...");
     }
 
