@@ -25,14 +25,17 @@ public class YellowButtonListener implements GpioPinListenerDigital {
     public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
         // display pin state on console
         LOGGER.debug(" --> GPIO PIN STATE CHANGE: " + event.getPin().getName() + " = " + event.getState());
-        try {
-            powerLevel = !powerLevel;
-            lifxClient.sendMessage(new SetPower("D0:73:D5:13:00:9B", Util.getIpAddress(), powerLevel));
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-        synchronized (lock) {
-            lock.notify();
+
+        if (event.getState().isHigh()) {
+            try {
+                powerLevel = !powerLevel;
+                lifxClient.sendMessage(new SetPower("D0:73:D5:13:00:9B", Util.getIpAddress(), powerLevel));
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
+            synchronized (lock) {
+                lock.notify();
+            }
         }
     }
 }
