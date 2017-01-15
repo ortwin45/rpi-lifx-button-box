@@ -21,7 +21,7 @@ public class RasPiClient {
     private GpioPinDigitalInput redButton;
     private GpioPinDigitalInput yellowButton;
 
-    private final Object lock = new Object();
+    private final LampState lock = new LampState();
 
     public static void main(String[] args) {
         LOGGER.info("Starting...");

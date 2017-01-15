@@ -8,16 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Random;
 
 public class RedButtonListener implements GpioPinListenerDigital {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedButtonListener.class);
 
-    private Object lock;
+    private LampState lampState;
     private LifxClient lifxClient;
 
-    public RedButtonListener(Object lock, LifxClient lifxClient) {
-        this.lock = lock;
+    public RedButtonListener(LampState lampState, LifxClient lifxClient) {
+        this.lampState = lampState;
         this.lifxClient = lifxClient;
     }
 
@@ -27,18 +26,13 @@ public class RedButtonListener implements GpioPinListenerDigital {
         LOGGER.debug(" --> GPIO PIN STATE CHANGE: " + event.getPin().getName() + " = " + event.getState());
         if (event.getState().isHigh()) {
             try {
-                lifxClient.sendMessage(new SetColor("D0:73:D5:13:00:9B", Util.getIpAddress(), randomHue(), 65000, 30000, 0, 200));
+                lifxClient.sendMessage(new SetColor("D0:73:D5:13:00:9B", lampState.getNextHue(), 0, lampState.getBrightness(), 0, 200));
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
             }
-            synchronized (lock) {
-                lock.notify();
+            synchronized (lampState) {
+                lampState.notify();
             }
         }
-    }
-
-    private int randomHue() {
-        Random randomHue = new Random();
-        return randomHue.nextInt(65535);
     }
 }

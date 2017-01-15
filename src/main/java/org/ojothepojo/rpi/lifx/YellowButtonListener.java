@@ -3,21 +3,23 @@ package org.ojothepojo.rpi.lifx;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import org.ojothepojo.lifx.LifxClient;
-import org.ojothepojo.lifx.message.device.request.SetPower;
+import org.ojothepojo.lifx.message.light.request.SetColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * This is the button that handles the brightness / power of the lamp.
+ */
 public class YellowButtonListener implements GpioPinListenerDigital {
     private static final Logger LOGGER = LoggerFactory.getLogger(YellowButtonListener.class);
 
-    private Object lock;
+    private LampState lampState;
     private LifxClient lifxClient;
-    private boolean powerLevel = true;
 
-    public YellowButtonListener(Object lock, LifxClient lifxClient) {
-        this.lock = lock;
+    YellowButtonListener(LampState lampState, LifxClient lifxClient) {
+        this.lampState = lampState;
         this.lifxClient = lifxClient;
     }
 
@@ -28,13 +30,12 @@ public class YellowButtonListener implements GpioPinListenerDigital {
 
         if (event.getState().isHigh()) {
             try {
-                powerLevel = !powerLevel;
-                lifxClient.sendMessage(new SetPower("D0:73:D5:13:00:9B", Util.getIpAddress(), powerLevel));
+                lifxClient.sendMessage(new SetColor("D0:73:D5:13:00:9B", lampState.getHue(), 65535, lampState.getNextBrightness(), 0, 200));
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
             }
-            synchronized (lock) {
-                lock.notify();
+            synchronized (lampState) {
+                lampState.notify();
             }
         }
     }
