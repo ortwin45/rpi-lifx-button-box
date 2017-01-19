@@ -50,14 +50,19 @@ class LampState {
         return shutdownActivated;
     }
 
-    void setRedButtonHigh(boolean state) {
-        isRedButtonHigh = state;
-        checkShutdownSequence();
+    void setRedButtonHigh(boolean high) {
+        isRedButtonHigh = high;
+        if (high) {
+            checkShutdownSequence();
+        }
+
     }
 
-    void setYellowButtonHigh(boolean state) {
-        isYellowButtonHigh = state;
-        checkShutdownSequence();
+    void setYellowButtonHigh(boolean high) {
+        isYellowButtonHigh = high;
+        if (high) {
+            checkShutdownSequence();
+        }
     }
 
     private void checkShutdownSequence() {
