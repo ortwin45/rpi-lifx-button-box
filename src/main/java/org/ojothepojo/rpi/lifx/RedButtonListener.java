@@ -25,6 +25,7 @@ public class RedButtonListener implements GpioPinListenerDigital {
         // display pin state on console
         LOGGER.debug(" --> GPIO PIN STATE CHANGE: " + event.getPin().getName() + " = " + event.getState());
         if (event.getState().isHigh()) {
+            lampState.setRedButtonHigh(true);
             try {
                 lifxClient.sendMessage(new SetColor("D0:73:D5:13:00:9B", lampState.getNextHue(), 65535, lampState.getBrightness(), 0, 200));
             } catch (IOException e) {
@@ -33,6 +34,8 @@ public class RedButtonListener implements GpioPinListenerDigital {
             synchronized (lampState) {
                 lampState.notify();
             }
+        } else {
+            lampState.setRedButtonHigh(false);
         }
     }
 }
