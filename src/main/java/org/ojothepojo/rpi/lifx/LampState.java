@@ -52,7 +52,7 @@ class LampState {
 
     void setRedButtonHigh(boolean high) {
         isRedButtonHigh = high;
-        if (high) {
+        if (high && isYellowButtonHigh) {
             checkShutdownSequence();
         }
 
@@ -60,7 +60,7 @@ class LampState {
 
     void setYellowButtonHigh(boolean high) {
         isYellowButtonHigh = high;
-        if (high) {
+        if (high && isRedButtonHigh) {
             checkShutdownSequence();
         }
     }
