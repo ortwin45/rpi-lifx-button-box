@@ -20,6 +20,10 @@ class LampState {
 
     private boolean isYellowButtonHigh = false;
 
+    private boolean shutdownActivated = false;
+
+    private long previousClick = 0;
+
     int getBrightness() {
         return brightnessStates[currentBrightnessIndex];
     }
@@ -42,11 +46,8 @@ class LampState {
         return getHue();
     }
 
-    boolean isShutDownRequested() {
-        if (isRedButtonHigh && isYellowButtonHigh) {
-            LOGGER.warn("Double button click!");
-        }
-        return false;
+    boolean isShutdownActivated() {
+        return shutdownActivated;
     }
 
     void setRedButtonHigh(boolean state) {
@@ -55,5 +56,12 @@ class LampState {
 
     void setYellowButtonHigh(boolean state) {
         isYellowButtonHigh = state;
+    }
+
+    private void checkShutdownSequence() {
+        long timeBetweenClicks = System.currentTimeMillis() - previousClick;
+        if (isRedButtonHigh && isYellowButtonHigh & timeBetweenClicks < 1000) {
+            shutdownActivated = true;
+        }
     }
 }

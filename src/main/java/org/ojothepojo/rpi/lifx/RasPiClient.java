@@ -21,7 +21,7 @@ public class RasPiClient {
     private GpioPinDigitalInput redButton;
     private GpioPinDigitalInput yellowButton;
 
-    private final LampState lock = new LampState();
+    private final LampState lampState = new LampState();
 
     public static void main(String[] args) {
         LOGGER.info("Starting...");
@@ -48,9 +48,13 @@ public class RasPiClient {
     private void doWait() {
         boolean done = false;
         while (!done) {
-            synchronized (lock) {
+            synchronized (lampState) {
                 try {
-                    lock.wait();
+                    lampState.wait();
+                    //done = lampState.isShutdownActivated();
+                    if (lampState.isShutdownActivated()) {
+                        LOGGER.warn("++++++ Shutting down");
+                    }
                     LOGGER.debug("I'm done waiting");
                 } catch (InterruptedException e) {
                     LOGGER.debug("Who woke me up?");
@@ -72,11 +76,11 @@ public class RasPiClient {
 
         redButton.setShutdownOptions(true);
         redButton.setDebounce(100);
-        redButton.addListener(new RedButtonListener(lock, lifxClient));
+        redButton.addListener(new RedButtonListener(lampState, lifxClient));
 
         yellowButton.setShutdownOptions(true);
         yellowButton.setDebounce(100);
-        yellowButton.addListener(new YellowButtonListener(lock, lifxClient));
+        yellowButton.addListener(new YellowButtonListener(lampState, lifxClient));
 
         LOGGER.debug("Init done...");
     }
