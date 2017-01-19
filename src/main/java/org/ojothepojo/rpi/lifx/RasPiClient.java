@@ -51,9 +51,10 @@ public class RasPiClient {
             synchronized (lampState) {
                 try {
                     lampState.wait();
-                    //done = lampState.isShutdownActivated();
+
                     if (lampState.isShutdownActivated()) {
                         LOGGER.warn("++++++ Shutting down");
+                        done = lampState.isShutdownActivated();
                     }
                     LOGGER.debug("I'm done waiting");
                 } catch (InterruptedException e) {
@@ -88,5 +89,12 @@ public class RasPiClient {
     private void shutdown() {
         LOGGER.info("Shutting down...");
         gpio.shutdown();
+        try {
+            Runtime.getRuntime().exec("sudo shutdown -h now");
+            System.exit(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

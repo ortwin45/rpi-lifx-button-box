@@ -68,7 +68,7 @@ class LampState {
     private void checkShutdownSequence() {
         long timeBetweenClicks = System.currentTimeMillis() - previousClick;
         LOGGER.debug("Time between clicks: " + timeBetweenClicks);
-        if (isRedButtonHigh && isYellowButtonHigh & timeBetweenClicks < 1000) {
+        if (isRedButtonHigh && isYellowButtonHigh & timeBetweenClicks < 300) {
             shutdownActivated = true;
         } else {
             shutdownActivated = false;
