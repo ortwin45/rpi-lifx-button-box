@@ -52,10 +52,12 @@ class LampState {
 
     void setRedButtonHigh(boolean state) {
         isRedButtonHigh = state;
+        checkShutdownSequence();
     }
 
     void setYellowButtonHigh(boolean state) {
         isYellowButtonHigh = state;
+        checkShutdownSequence();
     }
 
     private void checkShutdownSequence() {
