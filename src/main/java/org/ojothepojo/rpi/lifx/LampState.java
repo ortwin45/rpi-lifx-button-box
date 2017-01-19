@@ -65,5 +65,6 @@ class LampState {
         if (isRedButtonHigh && isYellowButtonHigh & timeBetweenClicks < 1000) {
             shutdownActivated = true;
         }
+        previousClick = System.currentTimeMillis();
     }
 }
